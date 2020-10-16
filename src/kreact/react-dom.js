@@ -108,7 +108,6 @@ const classComponentUpdater = {
     fiber.memoizedState = payload;
     inst.state = payload;
     scheduleUpdateOnFiber(fiber);
-    console.log("setState", fiber, payload); //sy-log
   }
 };
 
