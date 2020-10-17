@@ -1,4 +1,9 @@
 import {TEXT, PLACEMENT, UPDATE, DELETION, UpdateState} from "./const";
+import {
+  mountClassInstance,
+  constructClassInstance,
+  updateClassInstance
+} from "./ReactFiberClassComponent";
 
 // 下一个单元任务  fiber
 let nextUnitOfWork = null;
@@ -80,38 +85,17 @@ function updateClassComponent(fiber) {
   // let cmp = new type(props);
   let instance = fiber.stateNode;
   if (instance) {
+    updateClassInstance(fiber);
   } else {
     instance = constructClassInstance(fiber);
+    mountClassInstance(fiber);
   }
   let vvnode = instance.render();
   const children = [vvnode];
   reconcileChildren(fiber, children);
 }
 
-function constructClassInstance(fiber) {
-  const {type, props} = fiber;
-  let instance = new type(props);
-  adoptClassInstance(fiber, instance);
-  return instance;
-}
-
-function adoptClassInstance(fiber, instance) {
-  instance.updater = classComponentUpdater;
-  fiber.stateNode = instance;
-  instance._reactInternals = fiber;
-}
-
-const classComponentUpdater = {
-  isMounted: false,
-  enqueueSetState(inst, payload, callback) {
-    const fiber = inst._reactInternals;
-    fiber.memoizedState = payload;
-    inst.state = payload;
-    scheduleUpdateOnFiber(fiber);
-  }
-};
-
-function scheduleUpdateOnFiber(fiber) {
+export function scheduleUpdateOnFiber(fiber) {
   wipRoot = {
     node: currentRoot.node,
     props: currentRoot.props,
@@ -246,7 +230,8 @@ function reconcileChildren(returnFiber, newChildren) {
       base: oldFiber,
       return: returnFiber,
       effectTag: UPDATE,
-      stateNode: oldFiber.stateNode
+      stateNode: oldFiber.stateNode,
+      memoizedState: oldFiber.memoizedState
     });
     lastPlacedIndex = placeChild(
       newFiber,
@@ -450,8 +435,6 @@ function workLoop(deadline) {
 }
 
 requestIdleCallback(workLoop);
-
-// ! 提交
 
 function commitRoot() {
   deletions.forEach(commitWorker);

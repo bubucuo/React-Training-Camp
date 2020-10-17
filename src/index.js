@@ -1,9 +1,9 @@
-// import * as React from "react";
+// import React, {useState} from "react";
 // import * as ReactDOM from "react-dom";
 
 import React from "./kreact/";
 import ReactDOM, {useState} from "./kreact/react-dom";
-// import Component from "./kreact/Component";
+import Component from "./kreact/Component";
 import "./index.css";
 
 class ClassComponent extends React.Component {
@@ -11,6 +11,16 @@ class ClassComponent extends React.Component {
     super(props);
     this.state = {count: 0};
   }
+  // *
+  static getDerivedStateFromProps(props, state) {
+    // getDerivedStateFromProps 会在调用 render 方法之前调用，
+    //并且在初始挂载及后续更新时都会被调用。
+    //它应返回一个对象来更新 state，如果返回 null 则不更新任何内容。
+    const {count} = state;
+    console.log("getDerivedStateFromProps", count);
+    return count < 3 ? null : {count: 0};
+  }
+
   render() {
     const {count} = this.state;
     return (
@@ -20,6 +30,7 @@ class ClassComponent extends React.Component {
         <button
           onClick={() => {
             this.setState({count: count + 1});
+            //this.setState({count: count + 2});
           }}>
           add count: {count}
         </button>
