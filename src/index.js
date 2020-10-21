@@ -12,6 +12,8 @@ class ClassComponent extends React.Component {
     this.state = {count: 0};
   }
   // *
+  // *
+  // todo
   static getDerivedStateFromProps(props, state) {
     // getDerivedStateFromProps 会在调用 render 方法之前调用，
     //并且在初始挂载及后续更新时都会被调用。
