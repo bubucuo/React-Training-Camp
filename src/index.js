@@ -1,9 +1,9 @@
-// import React, {useState} from "react";
-// import * as ReactDOM from "react-dom";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import React from "./kreact/";
-import ReactDOM, {useState} from "./kreact/react-dom";
-import Component from "./kreact/Component";
+// import React from "./kreact/";
+// import ReactDOM, {useState} from "./kreact/react-dom";
+// import Component from "./kreact/Component";
 import "./index.css";
 
 class ClassComponent extends React.Component {
@@ -42,7 +42,7 @@ class ClassComponent extends React.Component {
 }
 
 function FunctionComponent(props) {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = React.useState(0);
   return (
     <div className="border">
       <h3>FunctionComponent</h3>
