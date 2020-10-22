@@ -1,12 +1,28 @@
-// import * as React from "react";
+// import React, {Component} from "react";
 // import * as ReactDOM from "react-dom";
 
 import React from "./kreact/";
 import ReactDOM from "./kreact/react-dom";
-// import Component from "./kreact/Component";
+import Component from "./kreact/Component";
 
 import "./index.css";
 
+// 类组件
+class ClassComponent extends Component {
+  static defaultProps = {
+    color: "pink"
+  };
+  render() {
+    return (
+      <div className="border">
+        ClassComponent - {this.props.name}
+        <p className={this.props.color}>color</p>
+      </div>
+    );
+  }
+}
+
+// 函数组件
 function FunctionComponent(props) {
   return <div className="border">FunctionComponent-{props.name}</div>;
 }
@@ -17,7 +33,7 @@ const jsx = (
     <p>开课吧</p>
     <a href="https://www.kaikeba.com/">开课吧</a>
     <FunctionComponent name="函数组件" />
-
+    <ClassComponent name="类组件" color="red" />
     <ul>
       <Node />
     </ul>
@@ -25,7 +41,7 @@ const jsx = (
 );
 
 // key 标识了当前层级下节点的唯一性
-// 判断节点能不能复用的前提key和type
+// 判断节点能不能复用的前提同一层级下的节点的key和type都相等
 // 区分<React.Fragment></React.Fragment>和<></>
 function Node(props) {
   // return [1, 2, 3].map(item => (
