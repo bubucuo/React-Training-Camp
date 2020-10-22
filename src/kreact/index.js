@@ -1,3 +1,5 @@
+import {TEXT} from "./const";
+
 // type 标记了不同节点的类型，比如原生标签是字符串，文本的就没有type，函数组件就是函数
 function createElement(type, config, ...children) {
   if (config) {
@@ -23,7 +25,7 @@ function createElement(type, config, ...children) {
 // ! 源码中没有这个处理
 function createTextNode(text) {
   return {
-    type: "TEXT",
+    type: TEXT,
     props: {
       children: [],
       nodeValue: text

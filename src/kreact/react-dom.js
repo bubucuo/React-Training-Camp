@@ -1,9 +1,10 @@
+import {TEXT} from "./const";
+
 // * vnode 、 vvnode代表虚拟dom对象
 // * node dom节点
 
 // container dom容器节点
 function render(vnode, container) {
-  console.log("vndoe", vnode); //sy-log
   // step 1: vnode -> node
   const node = createNode(vnode);
 
@@ -18,7 +19,7 @@ function createNode(vnode) {
   let node;
 
   // todo 根据节点类型，生成dom节点
-  if (type === "TEXT") {
+  if (type === TEXT) {
     // 文本节点
     node = document.createTextNode("");
   } else if (typeof type === "string") {
