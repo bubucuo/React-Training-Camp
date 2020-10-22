@@ -17,8 +17,31 @@ const jsx = (
     <p>开课吧</p>
     <a href="https://www.kaikeba.com/">开课吧</a>
     <FunctionComponent name="函数组件" />
+
+    <ul>
+      <Node />
+    </ul>
   </div>
 );
+
+// key 标识了当前层级下节点的唯一性
+// 判断节点能不能复用的前提key和type
+// 区分<React.Fragment></React.Fragment>和<></>
+function Node(props) {
+  // return [1, 2, 3].map(item => (
+  //   <React.Fragment key={item}>
+  //     <li key={item}>{item}</li>
+  //     <li key={item}>{item}</li>
+  //   </React.Fragment>
+  // ));
+  return (
+    <>
+      <li>东方不败</li>
+      <li>跑路的令狐冲</li>
+      <li>张无忌</li>
+    </>
+  );
+}
 
 // 经过babel-loader编译，jsx就是React.createElement(...)函数执行
 ReactDOM.render(jsx, document.getElementById("root"));
