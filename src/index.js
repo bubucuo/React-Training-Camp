@@ -32,11 +32,11 @@ const jsx = (
     <h1>慢 慢 慢</h1>
     <p>开课吧</p>
     <a href="https://www.kaikeba.com/">开课吧</a>
-    <FunctionComponent name="函数组件" />
-    <ClassComponent name="类组件" color="red" />
-    <ul>
+    {/* <FunctionComponent name="函数组件" /> */}
+    {/* <ClassComponent name="类组件" color="red" /> */}
+    {/* <ul>
       <Node />
-    </ul>
+    </ul> */}
   </div>
 );
 
