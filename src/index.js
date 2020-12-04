@@ -1,39 +1,17 @@
-// import * as React from "react";
-// import * as ReactDOM from "react-dom";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
 
-import React from "./kreact/";
-import ReactDOM from "./kreact/react-dom";
-// import Component from "./kreact/Component";
-
-import "./index.css";
-
-function FunctionComponent(props) {
-  return <div className="border">FunctionComponent-{props.name}</div>;
-}
-
-const jsx = (
-  <div className="border">
-    <h1>慢 慢 慢</h1>
-    <p>开课吧</p>
-    <a href="https://www.kaikeba.com/">开课吧</a>
-    <FunctionComponent name="函数组件" />
-  </div>
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
 );
 
-// 经过babel-loader编译，jsx就是React.createElement(...)函数执行
-ReactDOM.render(jsx, document.getElementById("root"));
-console.log("version-sy-log", React.version); //sy-log
-
-// 原生标签节点
-// 文本节点
-// 函数组件节点
-
-// *
-// !
-// ?
-// todo 这里不是要做的事情 只是大家对黄色敏感而已
-// todo React.createElement什么时候调用了？
-// * 因为react里我写的jsx， jsx经过babel-loader编译，会变成React.createElement(...)函数的执行
-
-// todo 函数组件和类组件区别?
-//
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
