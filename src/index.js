@@ -4,6 +4,18 @@ import ReactDOM from "react-dom";
 // import Component from "./kreact/Component";
 import "./index.css";
 
+function Example() {
+  // 声明一个新的叫做 “count” 的 state 变量
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
+    </div>
+  );
+}
+
 class ClassComponent extends Component {
   render() {
     return (
@@ -38,6 +50,7 @@ const jsx = (
     <a href="https://www.kaikeba.com/">kkb</a>
     <FunctionComponent name="函数组件" />
     <ClassComponent name="类组件" />
+    <Example />
     <>
       <h1>1</h1>
       <h2>2</h2>
@@ -45,7 +58,6 @@ const jsx = (
     <ul>
       <FragmentComponent />
     </ul>
-
     {/* {[1, 2].map(item => (
       <React.Fragment key={Math.random()}>
         <h1>1-{item}</h1>

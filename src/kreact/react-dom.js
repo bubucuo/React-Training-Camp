@@ -12,41 +12,38 @@
 
 // *
 
-function render(vnode, container) {
-  console.log("vnode", vnode); //sy-log
+// *
+// fiber 结构
+// type 类型
+// props 属性
+// child 第一个子节点 fiber
+// sibling 下一个兄弟节点 fiber
+// return 父节点 fiber
+// stateNode 原生标签的dom节点
+// *
 
-  //  step1 vnode->node
-  const node = createNode(vnode);
-  // step2
-  container.appendChild(node);
+// wipRoot 正在工作的fiber的跟节点
+let wipRoot = null;
+function render(vnode, container) {
+  wipRoot = {
+    type: "div",
+    props: {
+      children: {...vnode}
+    },
+    stateNode: container
+  };
+  nextUnitOfWork = wipRoot;
 }
 
 function isStringOrNumber(sth) {
   return typeof sth === "string" || typeof sth === "number";
 }
 
-// 根据虚拟dom节点，生成真实dom节点
-// 这里需要注意的就是节点类型，因为不同节点渲染方式不同
-function createNode(vnode) {
-  let node;
-
-  const {type} = vnode;
-
-  // todo 根据虚拟dom节点，生成真实dom节点
-  if (typeof type === "string") {
-    // 原生标签节点， div\a
-    node = updateHostComponent(vnode);
-  } else if (isStringOrNumber(vnode)) {
-    // 文本标签节点
-    node = updateTextComponent(vnode);
-  } else if (typeof type === "function") {
-    node = type.prototype.isReactComponent
-      ? updateClassComponent(vnode)
-      : updateFunctionComponent(vnode);
-  } else {
-    // 处理fragment
-    node = updateFragmentComponent(vnode);
-  }
+// 给原生标签 创建dom节点
+function createNode(workInProgress) {
+  const {type, props} = workInProgress;
+  let node = document.createElement(type);
+  updateNode(node, props);
 
   return node;
 }
@@ -55,66 +52,161 @@ function createNode(vnode) {
 // 源码中需要处理的就复杂了，比如style、合成事件
 function updateNode(node, nextVal) {
   Object.keys(nextVal)
-    .filter(k => k !== "children")
+    // .filter(k => k !== "children")
     .forEach(k => {
-      node[k] = nextVal[k];
+      if (k === "children") {
+        if (isStringOrNumber(nextVal[k])) {
+          node.textContent = nextVal[k] + "";
+        }
+      } else {
+        node[k] = nextVal[k];
+      }
     });
 }
 
 // 原生标签节点，div、a
-function updateHostComponent(vnode) {
-  const {type, props} = vnode;
-  const node = document.createElement(type); //真实dom节点
-  updateNode(node, props);
-  reconcileChildren(node, props.children);
-  return node;
+function updateHostComponent(workInProgress) {
+  if (!workInProgress.stateNode) {
+    // 创建dom节点
+    workInProgress.stateNode = createNode(workInProgress);
+  }
+
+  // 协调子节点
+  reconcileChildren(workInProgress, workInProgress.props.children);
+  console.log("workInProgress", workInProgress); //sy-log
 }
 
-function updateTextComponent(vnode) {
-  const node = document.createTextNode(vnode);
-  return node;
-}
-
-// 返回node
-// 执行函数就行啦
-function updateFunctionComponent(vnode) {
-  const {type, props} = vnode;
+// 函数组件
+// 拿到子节点，然后协调
+function updateFunctionComponent(workInProgress) {
+  const {type, props} = workInProgress;
   const child = type(props);
-  // vnode -> node
-  const node = createNode(child);
-  return node;
+
+  reconcileChildren(workInProgress, child);
 }
 
-// 返回node
-// 先实例化
-// 再执行render函数
-function updateClassComponent(vnode) {
-  const {type, props} = vnode;
+function updateClassComponent(workInProgress) {
+  const {type, props} = workInProgress;
   const instance = new type(props);
   const child = instance.render();
-  // vnode -> node
-  const node = createNode(child);
-  return node;
+  reconcileChildren(workInProgress, child);
 }
 
-// 返回node
-function updateFragmentComponent(vnode) {
-  // ! 源码当中并没有使用createDocumentFragment，而是直接处理子节点
-  const node = document.createDocumentFragment();
-  reconcileChildren(node, vnode.props.children);
-  return node;
+function updateFragmentComponent(workInProgress) {
+  reconcileChildren(workInProgress, workInProgress.props.children);
 }
 
-//遍历子节点，子节点是vnode，然后再vnode->node,再插入parentNode中
-// 遍历执行render
-function reconcileChildren(parentNode, children) {
+// 协调子节点
+function reconcileChildren(workInProgress, children) {
+  if (isStringOrNumber(children)) {
+    return;
+  }
+
   const newChildren = Array.isArray(children) ? children : [children];
 
+  // 记录上一个fiber节点（就是哥哥或者姐姐）
+  let previousNewFiber = null;
   for (let i = 0; i < newChildren.length; i++) {
     let child = newChildren[i];
-    // vnode->node, 再把node插入到parentNode
-    render(child, parentNode);
+
+    let newFiber = {
+      type: child.type,
+      props: {...child.props},
+      child: null,
+      sibling: null,
+      return: workInProgress,
+      stateNode: null
+    };
+
+    if (i === 0) {
+      // newFiber 是workInProgress第一个子fiber
+      workInProgress.child = newFiber;
+    } else {
+      // sibling是下一个兄弟节点
+      previousNewFiber.sibling = newFiber;
+    }
+    previousNewFiber = newFiber;
   }
+}
+
+// 下一个要渲染更新的任务 fiber
+let nextUnitOfWork = null;
+// work in progress
+
+function performUnitOfWork(workInProgress) {
+  //step1:  渲染更新fiber
+  // todo
+
+  const {type} = workInProgress;
+  if (typeof type === "string") {
+    // 原生标签节点
+    updateHostComponent(workInProgress);
+  } else if (typeof type === "function") {
+    type.prototype.isReactComponent
+      ? updateClassComponent(workInProgress)
+      : updateFunctionComponent(workInProgress);
+  } else {
+    updateFragmentComponent(workInProgress);
+  }
+
+  // step2: 并且返回下一个(王朝的故事)
+  // 有长子
+  if (workInProgress.child) {
+    return workInProgress.child;
+  }
+  let nextFiber = workInProgress;
+
+  while (nextFiber) {
+    if (nextFiber.sibling) {
+      return nextFiber.sibling;
+    }
+    nextFiber = nextFiber.return;
+  }
+}
+
+function workLoop(IdleDeadline) {
+  while (nextUnitOfWork && IdleDeadline.timeRemaining() > 1) {
+    // 渲染更新fiber，并且返回下一个
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+  }
+
+  // commit
+  if (!nextUnitOfWork && wipRoot) {
+    commitRoot();
+  }
+}
+
+requestIdleCallback(workLoop);
+
+function commitRoot() {
+  commitWorker(wipRoot.child);
+  wipRoot = null;
+}
+
+function commitWorker(workInProgress) {
+  if (!workInProgress) {
+    return;
+  }
+  // step1  渲染更新自己
+  // todo
+  // vode->node, node更新到container
+  //怎么拿到 parentNode
+
+  let parentNodeFiber = workInProgress.return;
+  // fiber节点不一定有dom节点，比如fragment、Consumer
+  while (!parentNodeFiber.stateNode) {
+    parentNodeFiber = parentNodeFiber.return;
+  }
+  let parentNode = parentNodeFiber.stateNode;
+
+  if (workInProgress.stateNode) {
+    parentNode.appendChild(workInProgress.stateNode);
+  }
+
+  // step2 渲染更新子节点
+  commitWorker(workInProgress.child);
+  // step3 渲染更新sibling
+  commitWorker(workInProgress.sibling);
 }
 
 export default {render};
