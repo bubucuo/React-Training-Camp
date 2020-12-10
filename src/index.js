@@ -46,12 +46,12 @@ const jsx = (
       <FragmentComponent />
     </ul>
 
-    // {[1, 2].map(item => (
-    //   <React.Fragment key={Math.random()}>
-    //     <h1>1-{item}</h1>
-    //     <h2>2-{item}</h2>
-    //   </React.Fragment>
-    // ))}
+    {/* {[1, 2].map(item => (
+      <React.Fragment key={Math.random()}>
+        <h1>1-{item}</h1>
+        <h2>2-{item}</h2>
+      </React.Fragment>
+    ))}*/}
   </section>
 );
 
